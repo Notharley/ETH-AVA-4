@@ -6,18 +6,21 @@ We did create the ERC 20 TOKEN and we did name it as "Dengen Game Token"
 
 This smart contract is designed to illustrate various essential features of Solidity, including:
 
-1.Minting new tokens: The platform is able to create new tokens and distribute them to players as rewards. Only the owner has rights to mint tokens.
-2.Transferring tokens: Players are able to transfer their tokens to others.
-3.Redeeming tokens: Players are able to redeem their tokens for items in the in-game store.
-4.Checking token balance: Players are able to check their token balance at any time.
-5.Burning tokens: Anyone is able to burn tokens, that they own, that are no longer needed.
+1. Minting new tokens: The platform is able to create new tokens and distribute them to players as rewards.
+   Only the owner has rights to mint tokens.
+2. Transferring tokens: Players are able to transfer their tokens to others.
+3. Redeeming tokens: Players are able to redeem their tokens for items in the in-game store.
+4. Checking token balance: Players are able to check their token balance at any time.
+5. Burning tokens: Anyone is able to burn tokens, that they own, that are no longer needed.
+
 The contract includes:
 
-Functions to mint and burn tokens.
-1.A function to safely perform all the operations.
-2.Owner-restricted functions.
-3.A function to add items in inventory.
-4.Custom error handling.
+1. Functions to mint and burn tokens.
+2. A function to safely perform all the operations.
+3. Owner-restricted functions.
+4. A function to add items in inventory.
+5. Custom error handling.
+
 
 ## Getting Started
 
@@ -27,15 +30,16 @@ This program runs on EVM along with ".sol" as extension. We can either run it on
 
 ### Executing program
 
-We need a solidity compatible virtual machine in order to run this program. Create a new file with ".sol" extension
+We need a solidity compatible virtual machine in order to run this program.
+Create a new file with ".sol" extension
+```
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.18;
 
-    // SPDX-License-Identifier: MIT
-     pragma solidity 0.8.18;
-
-    contract DegenToken {
+contract DegenToken {
     string public name;
     string public symbol;
-    uint16 public decimals;
+    uint8 public decimals;
     uint256 public totalSupply;
 
     mapping(address => uint256) private balances;
@@ -65,7 +69,6 @@ We need a solidity compatible virtual machine in order to run this program. Crea
         name = "Degen Game Token";
         symbol = "DEGEN";
         decimals = 18;
-        totalSupply = 0;
         owner = msg.sender;
         addNftItem(0, "BAG", 200);
         addNftItem(1, "CAP", 100);
@@ -99,6 +102,12 @@ We need a solidity compatible virtual machine in order to run this program. Crea
         return true;
     }
 
+    function approve(address spender, uint256 amount) external returns (bool) {
+        allowances[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
+        return true;
+    }
+
     function mint(address to, uint256 amount) external onlyOwner {
         totalSupply += amount;
         balances[to] += amount;
@@ -118,42 +127,47 @@ We need a solidity compatible virtual machine in order to run this program. Crea
     }
 
     function redeem(uint256 itemId) external returns (string memory) {
-        require(balances[msg.sender] > 0, "Insufficient balance.");
-        require(nftItems[itemId].price > 0, "Invalid item ID.");
+        require(balances[msg.sender] >= nftItems[itemId].price, "Insufficient balance to redeem the item.");
 
         uint256 redemptionAmount = nftItems[itemId].price;
-        require(balances[msg.sender] >= redemptionAmount, "Insufficient balance to redeem the item.");
-
         balances[msg.sender] -= redemptionAmount;
 
         emit Redeem(msg.sender, nftItems[itemId].name);
 
         return nftItems[itemId].name;
     }
+
     function addNftItem(uint256 itemId, string memory itemName, uint256 itemPrice) public onlyOwner {
         nftItems[itemId] = NftItem(itemName, itemPrice);
     }
 }
 
+```
+
+
 ## Help
 
 Common Issues:
+ 1. Contract Compilation Errors:
+   A. Ensure your Solidity version is compatible (0.8.18 or later).
+   B. Check for syntax errors or typos in the contract.
 
-Contract Compilation Errors: A. Ensure your Solidity version is compatible (0.8.18 or later). B. Check for syntax errors or typos in the contract.
+2. Function Call Errors:
 
-Function Call Errors:
-
-A. Ensure you are using the correct contract address and bridging of meta mask. B. Check for access restrictions if encountering permission errors (e.g., onlyowner functions).
+   A. Ensure you are using the correct contract address and bridging of meta mask.
+   B. Check for access restrictions if encountering permission errors (e.g., onlyowner functions).
 
 
 ## Authors
 
+
 Contributors names and contact info
 
-Divij Shukla
-divij.shukla2003@gmail.com
+
+ex. Divij Shukla 
+ex. divij.shukla2003@gmailcom
 
 
 ## License
 
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
+This project is licensed under th eDivij Shukla License - see the LICENSE.md file for details
