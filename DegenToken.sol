@@ -1,10 +1,10 @@
-/ SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.18;
 
 contract DegenToken {
     string public name;
     string public symbol;
-    uint16 public decimals;
+    uint8 public decimals;
     uint256 public totalSupply;
 
     mapping(address => uint256) private balances;
@@ -34,7 +34,6 @@ contract DegenToken {
         name = "Degen Game Token";
         symbol = "DEGEN";
         decimals = 18;
-        totalSupply = 0;
         owner = msg.sender;
         addNftItem(0, "BAG", 200);
         addNftItem(1, "CAP", 100);
@@ -68,6 +67,12 @@ contract DegenToken {
         return true;
     }
 
+    function approve(address spender, uint256 amount) external returns (bool) {
+        allowances[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
+        return true;
+    }
+
     function mint(address to, uint256 amount) external onlyOwner {
         totalSupply += amount;
         balances[to] += amount;
@@ -87,18 +92,16 @@ contract DegenToken {
     }
 
     function redeem(uint256 itemId) external returns (string memory) {
-        require(balances[msg.sender] > 0, "Insufficient balance.");
-        require(nftItems[itemId].price > 0, "Invalid item ID.");
+        require(balances[msg.sender] >= nftItems[itemId].price, "Insufficient balance to redeem the item.");
 
         uint256 redemptionAmount = nftItems[itemId].price;
-        require(balances[msg.sender] >= redemptionAmount, "Insufficient balance to redeem the item.");
-
         balances[msg.sender] -= redemptionAmount;
 
         emit Redeem(msg.sender, nftItems[itemId].name);
 
         return nftItems[itemId].name;
     }
+
     function addNftItem(uint256 itemId, string memory itemName, uint256 itemPrice) public onlyOwner {
         nftItems[itemId] = NftItem(itemName, itemPrice);
     }
